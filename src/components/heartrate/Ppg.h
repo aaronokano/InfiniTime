@@ -7,6 +7,11 @@
 // 'sqrt_internal sqrtf' to save ~3KB of flash.
 #define sqrt_internal sqrtf
 #define FFT_SPEED_OVER_PRECISION
+#undef MAX
+#undef MIN
+#undef ABS
+#undef FALSE
+#undef TRUE
 #include "libs/arduinoFFT/src/arduinoFFT.h"
 
 namespace Pinetime {

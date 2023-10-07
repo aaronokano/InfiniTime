@@ -689,7 +689,7 @@ include_directories(
         .
         ../
 )
-include_directories(SYSTEM
+include_directories(
         libs/
         FreeRTOS/
         libs/mynewt-nimble/porting/npl/freertos/include
@@ -782,7 +782,7 @@ link_directories(
 
 
 set(COMMON_FLAGS -MP -MD -mthumb -mabi=aapcs -ftree-vrp -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin -fshort-enums -mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16 -fstack-usage -fno-exceptions -fno-non-call-exceptions)
-set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-expansion-to-defined -Wreturn-type -Werror=return-type -Werror)
+set(WARNING_FLAGS -Wall -Wextra -Warray-bounds=2 -Wformat=2 -Wformat-overflow=2 -Wformat-truncation=2 -Wformat-nonliteral -Wno-missing-field-initializers -Wno-unknown-pragmas -Wno-unused-parameter -Wno-expansion-to-defined -Wreturn-type -Werror=return-type -Werror)
 set(DEBUG_FLAGS -Og -g3)
 set(RELEASE_FLAGS -Os)
 set(CXX_FLAGS -fno-rtti)
@@ -795,6 +795,11 @@ add_definitions(-DFREERTOS)
 add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=0)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
+
+# Old GCC had an implicit extern "C" for all system headers, which breaks STL
+# headers, if those are included as system headers. Include them as normal
+# headers instead, because why not?
+include_directories(AFTER /usr/include/newlib/c++/8.3.1) 
 
 # Note: Only use this for debugging
 # Derive the low frequency clock from the main clock (SYNT)
@@ -860,8 +865,8 @@ target_compile_options(infinitime_fonts PUBLIC
 
 # NRF SDK
 add_library(nrf-sdk STATIC ${SDK_SOURCE_FILES})
-target_include_directories(nrf-sdk SYSTEM PUBLIC . ../)
-target_include_directories(nrf-sdk SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_include_directories(nrf-sdk PUBLIC . ../)
+target_include_directories(nrf-sdk PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nrf-sdk PRIVATE
         ${COMMON_FLAGS}
         $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
@@ -873,8 +878,8 @@ target_compile_options(nrf-sdk PRIVATE
 
 # NimBLE
 add_library(nimble STATIC ${NIMBLE_SRC} ${TINYCRYPT_SRC})
-target_include_directories(nimble SYSTEM PUBLIC . ../)
-target_include_directories(nimble SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_include_directories(nimble PUBLIC . ../)
+target_include_directories(nimble PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(nimble PRIVATE
         ${COMMON_FLAGS}
         $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
@@ -885,8 +890,8 @@ target_compile_options(nimble PRIVATE
 
 # lvgl
 add_library(lvgl STATIC ${LVGL_SRC})
-target_include_directories(lvgl SYSTEM PUBLIC . ../)
-target_include_directories(lvgl SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_include_directories(lvgl PUBLIC . ../)
+target_include_directories(lvgl PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(lvgl PRIVATE
         ${COMMON_FLAGS}
         $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>
@@ -897,7 +902,7 @@ target_compile_options(lvgl PRIVATE
 
 # QCBOR
 add_library(QCBOR STATIC ${QCBOR_SRC})
-target_include_directories(QCBOR SYSTEM PUBLIC libs/QCBOR/inc)
+target_include_directories(QCBOR PUBLIC libs/QCBOR/inc)
 # This is required with the current configuration
 target_compile_definitions(QCBOR PUBLIC QCBOR_DISABLE_FLOAT_HW_USE)
 # These are for space-saving
@@ -918,8 +923,8 @@ target_compile_options(QCBOR PRIVATE
 
 # LITTLEFS_SRC
 add_library(littlefs STATIC ${LITTLEFS_SRC})
-target_include_directories(littlefs SYSTEM PUBLIC . ../)
-target_include_directories(littlefs SYSTEM PUBLIC ${INCLUDES_FROM_LIBS})
+target_include_directories(littlefs PUBLIC . ../)
+target_include_directories(littlefs PUBLIC ${INCLUDES_FROM_LIBS})
 target_compile_options(littlefs PRIVATE
         ${COMMON_FLAGS}
         $<$<CONFIG:DEBUG>: ${DEBUG_FLAGS}>

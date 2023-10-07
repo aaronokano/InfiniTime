@@ -1,4 +1,6 @@
 #include "components/heartrate/Ppg.h"
+#undef MIN
+#undef MAX
 #include <nrf_log.h>
 #include <vector>
 
