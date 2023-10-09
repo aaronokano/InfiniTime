@@ -22,6 +22,8 @@
 
 using namespace Pinetime::Controllers;
 
+static NimbleController* nptr;
+
 NimbleController::NimbleController(Pinetime::System::SystemTask& systemTask,
                                    Ble& bleController,
                                    DateTime& dateTimeController,
